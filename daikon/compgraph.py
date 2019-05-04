@@ -45,7 +45,7 @@ def define_computation_graph(source_vocab_size: int, target_vocab_size: int, bat
         initial_state = encoder_cell.zero_state(batch_size, tf.float32)
 
         # this is now applied on dropout instead of encoder_cell
-        encoder_outputs, encoder_final_state = tf.nn.dynamic_rnn(encoder_cell,
+        encoder_outputs, encoder_final_state = tf.nn.dynamic_rnn(dropout,
                                                                  encoder_inputs_embedded,
                                                                  initial_state=initial_state,
                                                                  dtype=tf.float32)
@@ -55,7 +55,7 @@ def define_computation_graph(source_vocab_size: int, target_vocab_size: int, bat
         # apply dropout, 0.8 = keep probability
         dropout = tf.nn.dropout(decoder_cell, rate=0.8) 
         # this is now applied on dropout instead of encoder_cell
-        decoder_outputs, decoder_final_state = tf.nn.dynamic_rnn(decoder_cell,
+        decoder_outputs, decoder_final_state = tf.nn.dynamic_rnn(dropout,
                                                                  decoder_inputs_embedded,
                                                                  initial_state=encoder_final_state,
                                                                  dtype=tf.float32)
