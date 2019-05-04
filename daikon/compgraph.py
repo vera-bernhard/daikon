@@ -41,11 +41,11 @@ def define_computation_graph(source_vocab_size: int, target_vocab_size: int, bat
     with tf.variable_scope("Encoder"):
         encoder_cell = tf.contrib.rnn.LSTMCell(C.HIDDEN_SIZE)
         # apply dropout, 0.8 = keep probability
-        dropout_encoder = tf.nn.dropout(encoder_cell, rate=0.8)
+        # dropout_encoder = tf.nn.dropout(encoder_cell, rate=0.8)
         initial_state = encoder_cell.zero_state(batch_size, tf.float32)
 
         # this is now applied on dropout instead of encoder_cell
-        encoder_outputs, encoder_final_state = tf.nn.dynamic_rnn(dropout_encoder,
+        encoder_outputs, encoder_final_state = tf.nn.dynamic_rnn(encoder_cell,
                                                                  encoder_inputs_embedded,
                                                                  initial_state=initial_state,
                                                                  dtype=tf.float32)
@@ -53,9 +53,9 @@ def define_computation_graph(source_vocab_size: int, target_vocab_size: int, bat
     with tf.variable_scope("Decoder"):
         decoder_cell = tf.contrib.rnn.LSTMCell(C.HIDDEN_SIZE)
         # apply dropout, 0.8 = keep probability
-        dropout_decoder = tf.nn.dropout(decoder_cell, rate=0.8) 
+        # dropout_decoder = tf.nn.dropout(decoder_cell, rate=0.8) 
         # this is now applied on dropout instead of encoder_cell
-        decoder_outputs, decoder_final_state = tf.nn.dynamic_rnn(dropout_decoder,
+        decoder_outputs, decoder_final_state = tf.nn.dynamic_rnn(decoder_cell,
                                                                  decoder_inputs_embedded,
                                                                  initial_state=encoder_final_state,
                                                                  dtype=tf.float32)
@@ -77,7 +77,7 @@ def define_computation_graph(source_vocab_size: int, target_vocab_size: int, bat
 
     with tf.variable_scope('Optimizer'):
         # RMSProb optimizer instead of Adam optimizer
-        train_step = tf.train.AdamOptimizer(learning_rate=C.LEARNING_RATE).minimize(loss)
+        train_step = tf.train.RMSPropOptimizer(learning_rate=C.LEARNING_RATE).minimize(loss)
 
     # Logging of cost scalar (@tensorboard)
     tf.summary.scalar('loss', loss)
