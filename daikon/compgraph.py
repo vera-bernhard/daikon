@@ -70,7 +70,8 @@ def define_computation_graph(source_vocab_size: int, target_vocab_size: int, bat
         loss = tf.reduce_mean(weighted_cross_entropy)
 
     with tf.variable_scope('Optimizer'):
-        train_step = tf.train.AdamOptimizer(learning_rate=C.LEARNING_RATE).minimize(loss)
+        # RMSProb optimizer instead of Adam optimizer
+        train_step = tf.train.RMSProbOptimizer(learning_rate=C.LEARNING_RATE).minimize(loss)
 
     # Logging of cost scalar (@tensorboard)
     tf.summary.scalar('loss', loss)
