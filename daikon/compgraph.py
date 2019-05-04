@@ -77,7 +77,7 @@ def define_computation_graph(source_vocab_size: int, target_vocab_size: int, bat
 
     with tf.variable_scope('Optimizer'):
         # RMSProb optimizer instead of Adam optimizer
-        train_step = tf.train.RMSProbOptimizer(learning_rate=C.LEARNING_RATE).minimize(loss)
+        train_step = tf.train.AdamOptimizer(learning_rate=C.LEARNING_RATE).minimize(loss)
 
     # Logging of cost scalar (@tensorboard)
     tf.summary.scalar('loss', loss)
