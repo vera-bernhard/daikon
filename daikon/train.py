@@ -154,12 +154,12 @@ def train(source_data: str,
                                     decoder_inputs: y,
                                     decoder_targets: z}
                     l, _, s = session.run([val_loss, val_train_step, val_summary],
-                                      feed_dict=val_feed_dict)
+                                      val_feed_dict=val_feed_dict)
                     val_loss += l
                     val_epoch += 1
                 current_val_perplexity = np.exp(val_loss / val_epoch)
                 logger.info("Perplexity on validation data: %.2f", current_val_perplexity)
-                if current_val_perplexity < best_val_loss:
+                if current_val_perplexity < best_val_perplexity:
                     logger.info("Lowest perplexity on validation data achieved")
                     best_val_perplexity = current_val_perplexity
                     no_imp_count = 0
