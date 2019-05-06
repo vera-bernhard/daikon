@@ -151,8 +151,8 @@ def train(source_data: str,
                 val_epoch = 0
                 for x, y, z in reader.iterate(val_reader_ids, batch_size, shuffle=True):
                     val_feed_dict = {encoder_inputs: x,
-                             decoder_inputs: y,
-                             decoder_targets: z}
+                                    decoder_inputs: y,
+                                    decoder_targets: z}
                     l, _, s = session.run([val_loss, val_train_step, val_summary],
                                       feed_dict=val_feed_dict)
                     val_loss += l
