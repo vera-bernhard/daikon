@@ -59,6 +59,8 @@ def train(source_data: str,
           save_to: str,
           log_to: str,
           sample_after_epoch: bool,
+          val_source: str, # added for eary stopping
+          val_target: str,
           **kwargs) -> None:
     """Trains a language model. See argument description in `bin/romanesco`."""
 
@@ -86,6 +88,15 @@ def train(source_data: str,
     graph_components = define_computation_graph(source_vocab.size, target_vocab.size, batch_size)
     encoder_inputs, decoder_targets, decoder_inputs, loss, train_step, decoder_logits, summary = graph_components
 
+    # Check if validation data is given and hence early stopping should be performed
+    early_stopping = val_source is not None
+    # Create computation graph on validation set
+    patience = 3
+    if early_stopping:
+        val_reader_ids = list(reader.read_parallel(val_source, val_target, source_vocab, target_vocab, C.MAX_LEN))
+        val_graph_components = define_computation_graph(source_vocab.size, target_vocab.size, batch_size)
+        val_encoder_inputs, val_decoder_targets, val_decoder_inputs, val_loss, val_train_step, val_decoder_logits, val_summary = val_graph_components
+
     saver = tf.train.Saver()
 
     with tf.Session() as session:
@@ -97,6 +108,11 @@ def train(source_data: str,
         logger.info("Starting training.")
         tic = time.time()
         num_batches = math.floor(len(reader_ids) / batch_size)
+
+        if early_stopping:
+            val_num_batches = math.floor(len(val_reader_ids)/batch_size)
+            best_val_perplexity = float("inf")
+            no_imp_count = 0
 
         # iterate over training data `epochs` times
         for epoch in range(1, epochs + 1):
@@ -122,12 +138,40 @@ def train(source_data: str,
                     iter_tic = time.time()
             perplexity = np.exp(total_loss / total_iter)
             logger.info("Perplexity on training data after epoch %s: %.2f", epoch, perplexity)
-            saver.save(session, os.path.join(save_to, C.MODEL_FILENAME))
+            
 
             if sample_after_epoch:
                 # sample from model after epoch
                 thread = threading.Thread(target=_sample_after_epoch, args=[reader_ids, source_vocab, target_vocab, save_to, epoch])
                 thread.start()
+
+            save_model = True
+            if early_stopping:
+                val_loss = 0
+                val_epoch = 0
+                for x, y, z in reader.iterate(val_reader_ids, batch_size, shuffle=True)
+                    val_feed_dict = {encoder_inputs: x,
+                             decoder_inputs: y,
+                             decoder_targets: z}
+                    l, _, s = session.run([val_loss, val_train_step, val_summary],
+                                      feed_dict=val_feed_dict)
+                    val_loss += l
+                    val_epoch += 1
+                current_val_perplexity = np.exp(val_loss / val_epoch)
+                logger.info("Perplexity on validation data: %.2f", current_val_perplexity)
+                if current_val_perplexity < best_val_loss:
+                    logger.info("Lowest perplexity on validation data achieved")
+                    best_val_perplexity = current_val_perplexity
+                    no_imp_count = 0
+
+                else:
+                    save_model = False
+                    no_imp_count += 1
+                    if no_imp_count >= patience:
+                        logger.info("Stopped improving on validation data for %d epochs: terminating training", no_imp_count)
+                
+                if save_model:
+                    saver.save(session, os.path.join(save_to, C.MODEL_FILENAME))
 
         taken = time.time() - tic
         m, s = divmod(taken, 60)
