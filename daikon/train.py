@@ -149,7 +149,7 @@ def train(source_data: str,
             if early_stopping:
                 val_loss = 0
                 val_epoch = 0
-                for x, y, z in reader.iterate(val_reader_ids, batch_size, shuffle=True)
+                for x, y, z in reader.iterate(val_reader_ids, batch_size, shuffle=True):
                     val_feed_dict = {encoder_inputs: x,
                              decoder_inputs: y,
                              decoder_targets: z}
