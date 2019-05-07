@@ -110,8 +110,7 @@ def train(source_data: str,
         num_batches = math.floor(len(reader_ids) / batch_size)
 
         if early_stopping:
-            val_num_batches = math.floor(len(val_reader_ids)/batch_size)
-            best_val_perplexity = float("inf")
+            best_val_perplexity = float()
             no_imp_count = 0
 
         # iterate over training data `epochs` times
@@ -150,15 +149,19 @@ def train(source_data: str,
                 val_loss = 0
                 val_epoch = 0
                 for x, y, z in reader.iterate(val_reader_ids, batch_size, shuffle=True):
+
                     val_feed_dict = {val_encoder_inputs: x,
                                     val_decoder_inputs: y,
                                     val_decoder_targets: z}
+
                     l, _, s = session.run([val_loss, val_train_step, val_summary],
                                       val_feed_dict=val_feed_dict)
                     val_loss += l
                     val_epoch += 1
-                current_val_perplexity = np.exp(val_loss / val_epoch)
-                logger.info("Perplexity on validation data: %.2f", current_val_perplexity)
+
+                    current_val_perplexity = np.exp(val_loss / val_epoch)
+                    logger.info("Perplexity on validation data: %.2f", current_val_perplexity)
+                    
                 if current_val_perplexity < best_val_perplexity:
                     logger.info("Lowest perplexity on validation data achieved")
                     best_val_perplexity = current_val_perplexity
