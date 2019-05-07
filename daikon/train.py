@@ -121,6 +121,7 @@ def train(source_data: str,
             iter_tic = time.time()
 
             for x, y, z in reader.iterate(reader_ids, batch_size, shuffle=True):
+                print('x: {}, y: {}, z: {}'.format(x,y,z))
 
                 feed_dict = {encoder_inputs: x,
                              decoder_inputs: y,
@@ -161,7 +162,7 @@ def train(source_data: str,
 
                     current_val_perplexity = np.exp(val_loss / val_epoch)
                     logger.info("Perplexity on validation data: %.2f", current_val_perplexity)
-                    
+
                 if current_val_perplexity < best_val_perplexity:
                     logger.info("Lowest perplexity on validation data achieved")
                     best_val_perplexity = current_val_perplexity
