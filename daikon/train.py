@@ -122,6 +122,7 @@ def train(source_data: str,
 
             for x, y, z in reader.iterate(reader_ids, batch_size, shuffle=True):
                 print('x: {}\n\n'.format(x))
+                print('encoder_inputs: {}'.format(encoder_inputs))
 
                 feed_dict = {encoder_inputs: x,
                              decoder_inputs: y,
