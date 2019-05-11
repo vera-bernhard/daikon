@@ -57,7 +57,7 @@ def define_computation_graph(source_vocab_size: int, target_vocab_size: int, bat
         encoder_outputs = tf.concat([l_encoder_outputs, r_encoder_outputs], 2)
         encoder_final_state = tf.concat([l_encoder_final_state, r_encoder_final_state], 1)
 
-       """  # this is now applied on dropout instead of encoder_cell
+        """  # this is now applied on dropout instead of encoder_cell
         encoder_outputs, encoder_final_state = tf.nn.dynamic_rnn(encoder_cell,
                                                                  encoder_inputs_embedded,
                                                                  initial_state=initial_state,
