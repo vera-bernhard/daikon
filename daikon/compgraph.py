@@ -52,14 +52,16 @@ def define_computation_graph(source_vocab_size: int, target_vocab_size: int, bat
         (l_encoder_outputs, r_encoder_outputs),(l_encoder_final_state, r_encoder_final_state) = tf.nn.bidirectional_dynamic_rnn(
                                                                                                 cell_fw=l_encoder_cell, 
                                                                                                 cell_bw=r_encoder_cell,
-                                                                                                initial_state_fw = l_initial_state,
-                                                                                                initial_state_bw = r_initial_state,
                                                                                                 inputs=encoder_inputs_embedded,
                                                                                                 dtype=tf.float32)
         encoder_outputs = tf.concat([l_encoder_outputs, r_encoder_outputs], 2)
         encoder_final_state = tf.concat([l_encoder_final_state, r_encoder_final_state], 1)
 
-
+       """  # this is now applied on dropout instead of encoder_cell
+        encoder_outputs, encoder_final_state = tf.nn.dynamic_rnn(encoder_cell,
+                                                                 encoder_inputs_embedded,
+                                                                 initial_state=initial_state,
+                                                                 dtype=tf.float32) """
 
     with tf.variable_scope("Decoder"):
         decoder_cell = tf.contrib.rnn.LSTMCell(C.HIDDEN_SIZE)
