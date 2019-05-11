@@ -178,7 +178,7 @@ def train(source_data: str,
                 thread.start()
             
             if early_stopping:
-                thread = threading.Thread(target=_early_stopping, args=[])
+                thread = threading.Thread(target=_early_stopping, args=[val_reader_ids, source_vocab, target_vocab, batch_size])
                 thread.start()
                 
             if save_model:
