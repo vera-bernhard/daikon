@@ -57,7 +57,7 @@ def define_computation_graph(source_vocab_size: int, target_vocab_size: int, bat
                                                                                                 inputs=encoder_inputs_embedded,
                                                                                                 dtype=tf.float32)
         encoder_outputs = tf.concat([l_encoder_outputs, r_encoder_outputs], 2)
-        encoder_final_state = tf.concat([l_encoder_final_state, r_encoder_final_state, 1])
+        encoder_final_state = tf.concat([l_encoder_final_state, r_encoder_final_state], 1)
 
 
 
