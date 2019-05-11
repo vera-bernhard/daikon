@@ -126,7 +126,7 @@ def train(source_data: str,
 
     graph_components = define_computation_graph(source_vocab.size, target_vocab.size, batch_size)
     encoder_inputs, decoder_targets, decoder_inputs, loss, train_step, decoder_logits, summary = graph_components
-    print('encoder_inputs: {}'.format(encoder_inputs))
+    #print('encoder_inputs: {}'.format(encoder_inputs))
 
     # Check if validation data is given and hence early stopping should be performed
     early_stopping = val_source is not None
@@ -155,7 +155,7 @@ def train(source_data: str,
             iter_tic = time.time()
 
             for x, y, z in reader.iterate(reader_ids, batch_size, shuffle=True):
-                print('x: {}\n\n'.format(x))
+                #print('x: {}\n\n'.format(x))
                 feed_dict = {encoder_inputs: x,
                              decoder_inputs: y,
                              decoder_targets: z}
