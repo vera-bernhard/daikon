@@ -52,7 +52,7 @@ def define_computation_graph(source_vocab_size: int, target_vocab_size: int, bat
                                                                  dtype=tf.float32)
 
         # bidirectional encoding --> not working!
-"""     with tf.variable_scope("Encoder"):
+        """     with tf.variable_scope("Encoder"):
         fw_encoder_cell = tf.contrib.rnn.LSTMCell(C.HIDDEN_SIZE72)
         bw_encoder_cell = tf.contrib.rnn.LSTMCell(C.HIDDEN_SIZE/2)
 
