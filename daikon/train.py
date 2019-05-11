@@ -83,7 +83,8 @@ def _early_stopping(val_reader_ids,
             no_imp_count = 0
 
         else:
-            save_model = False
+            global save_model 
+            save_model= False
             no_imp_count += 1
             if no_imp_count >= patience:
                 logger.info("Stopped improving on validation data for %d epochs: terminating training", no_imp_count)
