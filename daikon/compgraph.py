@@ -51,7 +51,7 @@ def define_computation_graph(source_vocab_size: int, target_vocab_size: int, bat
                                                                         dtype=tf.float32)
         """
     with tf.variable_scope("Encoder"):
-        fw_encoder_cell = tf.contrib.rnn.LSTMCell(C.HIDDEN_SIZE72)
+        fw_encoder_cell = tf.contrib.rnn.LSTMCell(C.HIDDEN_SIZE/2)
         bw_encoder_cell = tf.contrib.rnn.LSTMCell(C.HIDDEN_SIZE/2)
 
         fw_initial_state = fw_encoder_cell.zero_state(batch_size, tf.float32)
