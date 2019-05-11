@@ -178,7 +178,7 @@ def train(source_data: str,
                 thread = threading.Thread(target=_sample_after_epoch, args=[reader_ids, source_vocab, target_vocab, save_to, epoch])
                 thread.start()
             
-            if earlyif early_stopping:
+            if early_stopping:
                 thread = threading.Thread(target=_early_stopping, args=[val_reader_ids, source_vocab, target_vocab, batch_size])
                 thread.start()
            
