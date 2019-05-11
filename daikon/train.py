@@ -49,7 +49,7 @@ def _sample_after_epoch(reader_ids: List[reader.ReaderTuple],
         logger.debug("Actual output:\t%s", output_line)
     logger.debug("-" * 30)
 
-""" def _early_stopping(val_reader_ids, 
+def _early_stopping(val_reader_ids, 
                     source_vocab, 
                     target_vocab, 
                     batch_size):
@@ -89,7 +89,7 @@ def _sample_after_epoch(reader_ids: List[reader.ReaderTuple],
             if no_imp_count >= patience:
                 logger.info("Stopped improving on validation data for %d epochs: terminating training", no_imp_count)
 
- """
+
 def train(source_data: str,
           target_data: str,
           epochs: int,
@@ -130,9 +130,9 @@ def train(source_data: str,
     #print('encoder_inputs: {}'.format(encoder_inputs))
 
     # Check if validation data is given and hence early stopping should be performed
-    """ early_stopping = val_source is not None
+    early_stopping = val_source is not None
     if early_stopping:
-        val_reader_ids = list(reader.read_parallel(val_source, val_target, source_vocab, target_vocab, C.MAX_LEN)) """
+        val_reader_ids = list(reader.read_parallel(val_source, val_target, source_vocab, target_vocab, C.MAX_LEN))
 
         
 
@@ -178,9 +178,9 @@ def train(source_data: str,
                 thread = threading.Thread(target=_sample_after_epoch, args=[reader_ids, source_vocab, target_vocab, save_to, epoch])
                 thread.start()
             
-            """ if earlyif early_stopping:
+            if earlyif early_stopping:
                 thread = threading.Thread(target=_early_stopping, args=[val_reader_ids, source_vocab, target_vocab, batch_size])
-                thread.start() """
+                thread.start()
            
             global save_model
 
