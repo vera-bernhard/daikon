@@ -39,21 +39,32 @@ def define_computation_graph(source_vocab_size: int, target_vocab_size: int, bat
         decoder_inputs_embedded = tf.nn.embedding_lookup(target_embedding, decoder_inputs)
 
     with tf.variable_scope("Encoder"):
-        encoder_cell = tf.contrib.rnn.LSTMCell(C.HIDDEN_SIZE)
-        # apply dropout, 0.8 = keep probability
-        encoder_cell = tf.contrib.rnn.DropoutWrapper(encoder_cell, 0.8)
-        initial_state = encoder_cell.zero_state(batch_size, tf.float32)
+        # build bidirectional RNN
+        l_encoder_cell = tf.contrib.rnn.LSTMCell(C.HIDDEN_SIZE/2)
+        r_encoder_cell = tf.contrib.rnn.LSTMCell(C.HIDDEN_SIZE/2)
+        # apply dropout, 0.5 = keep probability
+        l_encoder_cell = tf.contrib.rnn.DropoutWrapper(l_encoder_cell, 0.5)
+        r_encoder_cell = tf.contrib.rnn.DropoutWrapper(r_encoder_cell, 0.5)
 
-        # this is now applied on dropout instead of encoder_cell
-        encoder_outputs, encoder_final_state = tf.nn.dynamic_rnn(encoder_cell,
-                                                                 encoder_inputs_embedded,
-                                                                 initial_state=initial_state,
-                                                                 dtype=tf.float32)
+        l_initial_state = l_encoder_cell.zero_state(batch_size, tf.float32)
+        r_initial_state = r_encoder_cell.zero_state(batch_size, tf.float32)
+
+        (l_encoder_outputs, r_encoder_outputs),(l_encoder_final_state, r_encoder_final_state) = tf.nn.bidirectional_dynamic_rnn(
+                                                                                                cell_fw=l_encoder_cell, 
+                                                                                                cell_bw=r_encoder_cell,
+                                                                                                initial_state_fw = l_initial_state,
+                                                                                                initial_state_bw = r_initial_state,
+                                                                                                inputs=encoder_inputs_embedded,
+                                                                                                dtype=tf.float32)
+        encoder_outputs = tf.concat([l_encoder_outputs, r_encoder_outputs], 2)
+        encoder_final_state = tf.concat([l_encoder_final_state, r_encoder_final_state, 1])
+
+
 
     with tf.variable_scope("Decoder"):
         decoder_cell = tf.contrib.rnn.LSTMCell(C.HIDDEN_SIZE)
         # apply dropout, 0.8 = keep probability
-        decoder_cell = tf.contrib.rnn.DropoutWrapper(decoder_cell, 0.8) 
+        decoder_cell = tf.contrib.rnn.DropoutWrapper(decoder_cell, 0.5) 
         # this is now applied on dropout instead of encoder_cell
         decoder_outputs, decoder_final_state = tf.nn.dynamic_rnn(decoder_cell,
                                                                  decoder_inputs_embedded,
